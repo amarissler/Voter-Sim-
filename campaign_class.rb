@@ -1,21 +1,4 @@
 require 'faker'
-# class Voter
-#   attr_accessor :voter_name, :affiliation, :voted
-#   def initialize
-#     @voter_name = voter_name
-#     @affiliation = affiliation
-#     @voted = voted
-#   end
-# end
-#
-# class Politician
-#   attr_accessor :politician_name, :party, :vote_count
-#   def initialize
-#     @politician_name = politician_name
-#     @party = party
-#     @vote_count = 1
-#   end
-# end
 
 class Campaign
   attr_accessor :voter_list, :politician_list
@@ -35,25 +18,25 @@ class Campaign
     winner
   end
 
-  def liberalness
+  def liberalness #assigns a numeric to represent affiliation as a value for liberalness
     @voter_list.each do |politics|
-    case politics[:affiliation] #this instance found in the Voter class
-    when "tea party"
-      liberalness_number = 10
-    when "conservative"
-      liberalness_number = 25
-    when "neutral"
-      liberalness_number = 50
-    when "liberal"
-      liberalness_number = 75
-    when "socialist"
-      liberalness_number = 90
-    end
-    party_vote(liberalness_number)
+      case politics[:affiliation]
+      when "tea party"
+        liberalness_number = 10
+      when "conservative"
+        liberalness_number = 25
+      when "neutral"
+        liberalness_number = 50
+      when "liberal"
+        liberalness_number = 75
+      when "socialist"
+        liberalness_number = 90
+      end
+      party_vote(liberalness_number)
     end
   end
 
-  def party_vote(libnumber)
+  def party_vote(libnumber) #Determins which party to vote for based on liberalness
     party_vote = (rand(1..100) <= libnumber) ? "democrat" : "republican"
     case party_vote
     when "democrat"
@@ -66,7 +49,7 @@ class Campaign
   end
 
   def create_democrat_ballot
-      @democrat_on_ballot = (politician_list.select {|whose| whose[:party] == "democrat"})
+      @democrat_on_ballot = (@politician_list.select {|whose| whose[:party] == "democrat"})
   end
 
   def pick_btw_democrat
@@ -75,7 +58,7 @@ class Campaign
   end
 
   def create_republican_ballot
-      @republicans_on_ballot = (politician_list.select {|whose| whose[:party] == "republican"})
+      @republicans_on_ballot = (@politician_list.select {|whose| whose[:party] == "republican"})
   end
 
   def pick_btw_republicans
@@ -98,12 +81,6 @@ class Campaign
     # puts "#{winner} wins!"
     end
   end
-
-
-
-
-
-
 
 end
 
@@ -142,14 +119,16 @@ def create_all_politicians(number_of_democrats, number_of_republicans)
   keys = [:name, :party, :vote_count]
   politician_values = []
   politician_names.each_with_index.map do |name, index|
-  politician_values << [name, all[index], 1]
-end
-  politician_values.map{|r| Hash[r.zip(keys)].invert }
+    politician_values << [name, all[index], 1]
+  end
+  politician_list = politician_values.map{|r| Hash[r.zip(keys)].invert }
+
 end
 #-------------------------------populate fake data------------------------------
 politician_list = create_all_politicians(2,2)
 voter_list = create_all_voters(2,35,20,28, 30)
 #-----------------------------------call methods--------------------------------
+
 simulate = Campaign.new(voter_list, politician_list)
 simulate.start_campaign
 

@@ -9,11 +9,10 @@ class Campaign
   end
 
   def start_campaign
-    puts "The election simulator is working."
-    selection_process
-  end
-
-  def selection_process
+    puts ""
+    puts "Running election simulation. Please wait......"
+    sleep(3)
+    puts ""
     liberalness
     winner
   end
@@ -49,7 +48,7 @@ class Campaign
   end
 
   def create_democrat_ballot
-      @democrat_on_ballot = (@politician_list.select {|whose| whose[:party] == "democrat"})
+    @democrat_on_ballot = (@politician_list.select {|whose| whose[:party] == "democrat"})
   end
 
   def pick_btw_democrat
@@ -58,7 +57,7 @@ class Campaign
   end
 
   def create_republican_ballot
-      @republicans_on_ballot = (@politician_list.select {|whose| whose[:party] == "republican"})
+    @republicans_on_ballot = (@politician_list.select {|whose| whose[:party] == "republican"})
   end
 
   def pick_btw_republicans
@@ -66,31 +65,40 @@ class Campaign
     cast_vote(rep_vote)
   end
 
-  def cast_vote(hillary)
-    hillary[:vote_count] += 1 #accessing the candidate's vote_count created in the class
+  def cast_vote(politician)
+    politician[:vote_count] += 1 #accessing the candidate's vote_count created in the class
   end
 
   def winner
-    y = 0
+    puts "****************************************************"
+    puts "******************Election Results******************"
+    puts "****************************************************"
     politician_list.each do |candidate|
-      puts "#{candidate[:name]}   -    #{candidate[:vote_count]}"
-      # if candidate[:vote_count] > y
-      #   y = candidate[:vote_count]
-      #   winner = y
-      # end
-    # puts "#{winner} wins!"
+      puts "#{candidate[:name]}, #{candidate[:party].capitalize}, received #{candidate[:vote_count]} votes."
+    end
+    winner = politician_list.max_by{|x| x[:vote_count]}
+    sleep(2)
+    puts "****************************************************"
+    puts "The winner is #{winner[:name]}!"
+    puts "****************************************************"
+    run_again
+  end
+
+  def run_again
+    puts "Would you like to run the simulation again? (y/n)"
+    print ""
+    puts again = gets.chomp
+    case again
+    when "y"
+      start_campaign
+    else
+      abort
     end
   end
 
 end
 
-
-
-#-----------------------------create fake data to test--------------------------
-
-# require 'faker'
-voter_list = []
-#-----------------------------create fake voters-------------------------------
+#-----------------------------create fake voters_list to test ------------------
 def create_all_voters(t, c, n, l, s)
   names = (t+l+n+s+c).times.map {Faker::Name.name}
   all = []
@@ -107,9 +115,7 @@ def create_all_voters(t, c, n, l, s)
   end
   values.map{|r| Hash[r.zip(keys)].invert }
 end
-
-#------------------------------create politician list---------------------------
-
+#-----------------------------create fake politician_list to test---------------
 def create_all_politicians(number_of_democrats, number_of_republicans)
   politician_names = (number_of_democrats+number_of_republicans).times.map {Faker::Name.name}
   all = []
@@ -122,7 +128,6 @@ def create_all_politicians(number_of_democrats, number_of_republicans)
     politician_values << [name, all[index], 1]
   end
   politician_list = politician_values.map{|r| Hash[r.zip(keys)].invert }
-
 end
 #-------------------------------populate fake data------------------------------
 politician_list = create_all_politicians(2,2)
@@ -131,5 +136,3 @@ voter_list = create_all_voters(2,35,20,28, 30)
 
 simulate = Campaign.new(voter_list, politician_list)
 simulate.start_campaign
-
-# p simulate.voter_list
